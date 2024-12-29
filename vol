@@ -1,0 +1,356 @@
+
+if data != "OI Delta (BINANCE PERP FUTURES ONLY)" 
+
+
+    if array.size(boxCo) > 1
+      and array.sum(boxCo) == array.size(levelsCount)  
+        boxTrack2 = array.new_float(array.size(m2), 0.0)    
+        if array.size(m2) > 0
+            for nx = 0 to array.size(m2) - 1
+                for x = 0 to array.size(levelsCount) - 1
+                    if array.get(levelsCount, x) <= array.get(m3, nx) and array.get(levelsCount, x) >= array.get(m4, nx)
+                        array.set(boxTrack2, nx, array.get(boxTrack2, nx) + 1)  
+            if array.sum(boxTrack2) > 0 
+                for x = 0 to array.size(levelsCount) - 1
+                    for nx = 0 to array.size(m2) - 1
+                        if array.get(boxTrack2, nx) != 0 and array.get(levelsCount, x) <= array.get(m3, nx) and array.get(levelsCount, x) >= array.get(m4, nx)  
+                            if array.get(m, nx) >= array.get(m6, nx)
+                                array.set(volCountUp, x, array.get(volCountUp, x) + (array.get(m2, nx) / array.get(boxTrack2, nx))) 
+                                SW = switch data    
+                                    "Volume"     =>  (str.tostring(array.get(volCountUp, x), format.volume) + " | " + str.tostring(array.get(volCountDn, x), format.volume))
+                                    "Vol. Delta" =>  math.sign(array.get(volCountUp, x) - array.get(volCountDn, x)) == 1                     ?
+                                               "+" + (str.tostring(array.get(volCountUp, x) - array.get(volCountDn, x), "###,###,###.00"))   : 
+                                                     (str.tostring(array.get(volCountUp, x) - array.get(volCountDn, x), "###,###,###.00"))
+                                if classic == false and array.size(lettersBox) > 0
+                                    label.set_text(array.get(lettersBox, x), SW) 
+                                else if classic == true and array.size(lettersBoxClassic) > 0
+                                    box.set_text(array.get(lettersBoxClassic, x), SW) 
+                            else 
+                                array.set(volCountDn, x, array.get(volCountDn, x) + (array.get(m2, nx) / array.get(boxTrack2, nx))) 
+                                SW = switch data    
+                                    "Volume"     =>  (str.tostring(array.get(volCountUp, x), format.volume) + " | " + str.tostring(array.get(volCountDn, x), format.volume))
+                                    "Vol. Delta" =>  math.sign(array.get(volCountUp, x) - array.get(volCountDn, x)) == 1                     ?
+                                               "+" + (str.tostring(array.get(volCountUp, x) - array.get(volCountDn, x), "###,###,###.00"))   : 
+                                                     (str.tostring(array.get(volCountUp, x) - array.get(volCountDn, x), "###,###,###.00"))  
+                                if array.size(lettersBox) > 0 and classic == false
+                                    label.set_text(array.get(lettersBox, x), SW)    
+                                else if classic == true and array.size(lettersBoxClassic) > 0
+                                    box.set_text(array.get(lettersBoxClassic, x), SW) 
+
+
+            for i = 1 to array.size(levelsCount) - 1
+                for x = 0 to array.size(m2) - 1
+                    if array.get(m3, x) < array.get(levelsCount, i) and array.get(m4, x) > array.get(levelsCount, i - 1)
+                        if array.get(m, x) >= array.get(m6, x)
+                            array.set(volCountUp, i - 1, array.get(volCountUp, i - 1) + array.get(m2, x))
+                            if array.size(lettersBox) > 0 or array.size(lettersBoxClassic) > 0
+                                SW2 = switch data   
+                                    "Volume"     =>  (str.tostring(array.get(volCountUp, i - 1), format.volume) + " | " + str.tostring(array.get(volCountDn, i - 1), format.volume))
+                                    "Vol. Delta" =>  math.sign(array.get(volCountUp, i - 1) - array.get(volCountDn, i - 1)) == 1                     ?
+                                               "+" + (str.tostring(array.get(volCountUp, i - 1) - array.get(volCountDn, i - 1), "###,###,###.00"))   : 
+                                                     (str.tostring(array.get(volCountUp, i - 1) - array.get(volCountDn, i - 1), "###,###,###.00"))  
+                                if classic == false   
+                                    label.set_text(array.get(lettersBox, i - 1),SW2)
+                                else if classic == true 
+                                    box.set_text(array.get(lettersBoxClassic, i - 1), SW2) 
+                        else
+                        
+                            array.set(volCountDn, i - 1, array.get(volCountDn, i - 1) + array.get(m2, x))
+                            if array.size(lettersBox) > 0 or array.size(lettersBoxClassic) > 0
+                                SW2 = switch data   
+                                    "Volume"     =>  (str.tostring(array.get(volCountUp, i - 1), format.volume) + " | " + str.tostring(array.get(volCountDn, i - 1), format.volume))
+                                    "Vol. Delta" =>  math.sign(array.get(volCountUp, i - 1) - array.get(volCountDn, i - 1)) == 1                     ?
+                                               "+" + (str.tostring(array.get(volCountUp, i - 1) - array.get(volCountDn, i - 1), "###,###,###.00"))   : 
+                                                     (str.tostring(array.get(volCountUp, i - 1) - array.get(volCountDn, i - 1), "###,###,###.00"))  
+                                if classic == false  
+                                    label.set_text(array.get(lettersBox, i - 1), SW2)
+                                else if classic == true 
+                                    box.set_text(array.get(lettersBoxClassic, i - 1), SW2)
+                            
+            array.unshift(volCountUp, 0)
+            array.unshift(volCountDn, 0)    
+            for x = 0 to array.size(m2) - 1
+                if array.get(m3, x) < array.get(levelsCount, 0) 
+                    if array.get(m, x) >= array.get(m6, x)
+                        array.set(volCountUp, 0, array.get(volCountUp, 0) + array.get(m2, x))
+                    else    
+                        array.set(volCountDn, 0, array.get(volCountDn, 0) + array.get(m2, x))   
+            volCountExUp = array.new_float(1), array.set(volCountExUp, 0, array.get(volCountUp, 0) + array.get(volCountUp, 1))
+            volCountExDn = array.new_float(1), array.set(volCountExDn, 0, array.get(volCountDn, 0) + array.get(volCountDn, 1))  
+            array.shift(volCountUp), array.set(volCountUp, 0, array.sum(volCountExUp))
+            array.shift(volCountDn), array.set(volCountDn, 0, array.sum(volCountExDn))  
+            SW3 = switch data   
+                "Volume"     =>  (str.tostring(array.sum(volCountExUp), format.volume) + " | " + str.tostring(array.sum(volCountExDn), format.volume))
+                "Vol. Delta" =>  math.sign(array.sum(volCountExUp) - array.sum(volCountExDn)) == 1 ? 
+                                 "+" + str.tostring(array.sum(volCountExUp) - array.sum(volCountExDn), "###,###,###.00") :
+                                 str.tostring(array.sum(volCountExUp) - array.sum(volCountExDn), "###,###,###.00")
+            if classic == false
+                label.set_text(array.get(lettersBox, 0), SW3)  
+            else 
+                box.set_text(array.get(lettersBoxClassic, 0), SW3)
+ 
+    if array.size(boxCo) == 1 
+        for i = 0 to array.size(m2) - 1
+            if array.get(m, i) >= array.get(m6, i)
+                array.set(volCountUp, 0, array.get(volCountUp, 0) + array.get(m2, i))
+            else    
+                array.set(volCountDn, 0, array.get(volCountDn, 0) + array.get(m2, i))
+        
+        if array.size(lettersBox) > 0 or array.size(lettersBoxClassic) > 0
+            SW4 = switch data   
+                "Volume"     =>  str.tostring(array.get(volCountUp, 0), format.volume) + " | " + str.tostring(array.get(volCountDn, 0), format.volume)
+                "Vol. Delta" =>  math.sign(array.get(volCountUp, 0) - array.get(volCountDn, 0)) == 1                       ? 
+                                 "+" + str.tostring(array.get(volCountUp, 0) - array.get(volCountDn, 0), "###,###,###.00") :
+                                 str.tostring(array.get(volCountUp, 0) - array.get(volCountDn, 0), "###,###,###.00")    
+            if classic == false 
+                label.set_text(array.get(lettersBox, 0), SW4 + "*")
+                colorChange(array.get(lettersBox, 0), array.sum(volCountUp) > array.sum(volCountDn) ? color.new(c,outline == true ? 50 : 0) : color.new(c1,outline == true ? 50 : 0)) 
+
+            else 
+                box.set_text(array.get(lettersBoxClassic, 0), SW4 + "*")
+                colorChange2(array.get(lettersBoxClassic, 0), array.sum(volCountUp) > array.sum(volCountDn) ? color.new(c,90) : color.new(c1,90)) 
+
+    if array.size(boxCo) == 0 
+      and array.size(m2) > 0 and bar_index >= firstBar and array.size(ticks3) > 1
+        for i = 1 to array.size(ticks3) - 1
+            if array.get(ticks3, i) > low and array.get(ticks3, i - 1) <= low
+                array.push(levelsCount, array.get(ticks3, i - 1))
+                break
+        if classic == false 
+            array.push(lettersBox, label.new(bar_index, array.get(levelsCount, 0), "", textcolor = color.white, style = outline == true ? label.style_text_outline : label.style_none, size = sz))
+        else 
+            calculation = switch calcBy 
+                "Ticks" => array.get(levelsCount, 0) + (tickz * syminfo.mintick)
+                => array.get(levelsCount, 0) * (1+perc)
+            array.push(lettersBoxClassic, box.new(bar_index, calculation,
+              bar_index + 1, array.get(levelsCount, 0), text = "", text_color = color.white, text_size = sz))
+
+        array.unshift(volCountUp, 0)
+        array.unshift(volCountDn, 0)
+        for i = 0 to array.size(m2) - 1
+            if array.get(m, i) >= array.get(m6, i) 
+                array.set(volCountUp, 0, array.get(volCountUp, 0) + array.get(m2, i))
+                SW5 = switch data   
+                    "Volume"     =>  (str.tostring(array.sum(volCountUp), format.volume) + " | " + str.tostring(array.sum(volCountDn), format.volume))
+                    "Vol. Delta" =>  math.sign(array.sum(volCountUp) - array.sum(volCountDn)) == 1                       ? 
+                                     "+" + str.tostring(array.sum(volCountUp) - array.sum(volCountDn), "###,###,###.00") :
+                                     str.tostring(array.sum(volCountUp)       - array.sum(volCountDn), "###,###,###.00")    
+                if classic == false 
+                    label.set_text(array.get(lettersBox, 0 ), SW5 + "*")
+                else    
+                    box.set_text(array.get(lettersBoxClassic, 0 ), SW5 + "*")
+
+
+            else    
+                array.set(volCountDn, 0, array.get(volCountDn, 0) + array.get(m2, i))
+                SW5 = switch data   
+                    "Volume"     =>  (str.tostring(array.sum(volCountUp), format.volume) + " | " + str.tostring(array.sum(volCountDn), format.volume))
+                    "Vol. Delta" =>  math.sign(array.sum(volCountUp) - array.sum(volCountDn)) == 1                       ? 
+                                     "+" + str.tostring(array.sum(volCountUp) - array.sum(volCountDn), "###,###,###.00") :
+                                     str.tostring(array.sum(volCountUp)       - array.sum(volCountDn), "###,###,###.00")    
+                if classic == false
+                    label.set_text(array.get(lettersBox, 0 ), SW5 + "*")
+                    colorChange(array.get(lettersBox, 0), array.sum(volCountUp) >= array.sum(volCountDn) ? color.new(c,outline == true ? 50 : 0) : color.new(c1,outline == true ? 50 : 0))    
+                else 
+                    box.set_text(array.get(lettersBoxClassic, 0 ), SW5 + "*")
+                    colorChange2(array.get(lettersBoxClassic, 0), array.sum(volCountUp) >= array.sum(volCountDn) ? color.new(c, 90) : color.new(c1, 90))    
+
+    if array.size(lettersBox) > 1 and classic == false or array.size(lettersBoxClassic) > 1 and classic == true
+        for i = 0 to classic == false ? array.size(lettersBox) - 1 : array.size(lettersBoxClassic) - 1
+            if classic == false 
+                switch data
+                    "Volume"     => colorChange(array.get(lettersBox, i) , array.get(volCountUp, i) < array.get(volCountDn, i) ?
+                     color.new(c1,outline == true ? 50 : 0) : color.new(c,outline == true ? 50 : 0))
+                    "Vol. Delta" => colorChange(array.get(lettersBox, i) , math.sign(array.get(volCountUp, i) - array.get(volCountDn, i)) == 1 ?
+                     color.new(c,outline == true ? 50 : 0) : color.new(c1,outline == true ? 50 : 0))
+            else
+                switch data 
+                    "Volume"     => colorChange2(array.get(lettersBoxClassic, i) , array.get(volCountUp, i) < array.get(volCountDn, i) ?
+                     color.new(c1,90) : color.new(c,90))
+                    "Vol. Delta" => colorChange2(array.get(lettersBoxClassic, i) , math.sign(array.get(volCountUp, i) - array.get(volCountDn, i)) == 1 ?
+                     color.new(c,90) : color.new(c1,90))
+
+            if classic == false 
+                if label.get_text(array.get(lettersBox, i)) == "" 
+                    label.set_color(array.get(lettersBox, i), na)
+            else 
+                if box.get_bottom(array.get(lettersBoxClassic, i)) > high  
+                    box.set_bgcolor(array.get(lettersBoxClassic, i), na)
+    
+        maxUp = 0.0
+        for i = 0 to classic == false ? array.size(lettersBox) - 1 : array.size(lettersBoxClassic) - 1
+            maxUp := data == "Volume" ? math.max(maxUp, array.get(volCountUp, i), array.get(volCountDn, i)): 
+             math.max(maxUp, math.abs(array.get(volCountUp, i) - array.get(volCountDn, i)))
+        for i = 0 to classic == false ? array.size(lettersBox) - 1 : array.size(lettersBoxClassic) - 1
+            if data == "Volume"
+                if array.get(volCountUp, i) == maxUp or array.get(volCountDn, i) == maxUp
+                    if classic == false 
+                        colorChange(array.get(lettersBox, i), c2)
+                    else 
+                        box.set_bgcolor(array.get(lettersBoxClassic, i), color.new(c2, 90))
+                        box.set_border_color(array.get(lettersBoxClassic, i), c2)
+
+            else    
+                if math.abs(array.get(volCountUp, i) - array.get(volCountDn, i)) == maxUp
+                    if classic == false    
+                        colorChange(array.get(lettersBox, i), c2)
+                    else 
+                        box.set_bgcolor(array.get(lettersBoxClassic, i), color.new(c2, 90))
+                        box.set_border_color(array.get(lettersBoxClassic, i), c2)
+                    break   
+    if classic
+        if array.size(levelsCount) > 1
+            if array.size(m2) > 0 
+                for x = 0 to array.size(m2) - 1 
+                    if array.get(m4, x) > array.get(levelsCount, array.size(levelsCount) - 1)
+                        if array.get(m, x) >= array.get(m6, x)
+                            array.set(volCountUp, array.size(volCountUp) - 1, array.get(volCountUp, array.size(volCountUp) - 1) +  array.get(m2, x))
+                            SWF = switch data
+                               
+                                "Volume"     =>  (str.tostring(array.get(volCountUp, array.size(volCountUp) - 1), format.volume) + " | " + 
+                                                 str.tostring(array.get(volCountDn, array.size(volCountDn) - 1), format.volume))
+                                "Vol. Delta" => math.sign(array.get(volCountUp, array.size(volCountUp) - 1) - array.get(volCountDn, array.size(volCountDn) - 1)) == 1   ? 
+                                     "+" + str.tostring(array.get(volCountUp, array.size(volCountUp) - 1) - array.get(volCountDn, array.size(volCountDn) - 1), "###,###,###.00") :
+                                     str.tostring(array.get(volCountUp, array.size(volCountUp) - 1) - array.get(volCountDn, array.size(volCountDn) - 1), "###,###,###.00")    
+                            
+                            box.set_text(array.get(lettersBoxClassic, array.size(lettersBoxClassic) - 1), SWF)
+
+                        else 
+                            
+                            array.set(volCountDn, array.size(volCountDn) - 1, array.get(volCountDn, array.size(volCountDn) - 1) +  array.get(m2, x))
+                            
+                            SWF = switch data
+                               
+                                "Volume"     =>  (str.tostring(array.get(volCountUp, array.size(volCountUp) - 1), format.volume) + " | " + 
+                                                 str.tostring(array.get(volCountDn, array.size(volCountDn) - 1), format.volume))
+                                "Vol. Delta" => math.sign(array.get(volCountUp, array.size(volCountUp) - 1) - array.get(volCountDn, array.size(volCountDn) - 1)) == 1                       ? 
+                                     "+" + str.tostring(array.get(volCountUp, array.size(volCountUp) - 1) - array.get(volCountDn, array.size(volCountDn) - 1), "###,###,###.00") :
+                                     str.tostring(array.get(volCountUp, array.size(volCountUp) - 1) - array.get(volCountDn, array.size(volCountDn) - 1), "###,###,###.00")    
+                        
+                            box.set_text(array.get(lettersBoxClassic, array.size(lettersBoxClassic) - 1), SWF)
+
+
+        for i = 0 to classic == false ? array.size(lettersBox) - 1 : array.size(lettersBoxClassic) - 1
+            if assume == true 
+                if data == "Volume" or data == "Vol. Delta"
+                    if array.get(volCountUp, i) == 0 and array.get(volCountDn, i) > 0
+                        array.set(volCountUp, i, array.get(volCountDn, i) * .40)
+                        array.set(volCountDn, i, array.get(volCountDn, i) * .60)
+                        if data == "Volume"
+                            if classic == false
+                                label.set_text(array.get(lettersBox, i), 
+                                     (str.tostring(array.get(volCountUp, i), format.volume) + " | " + str.tostring(array.get(volCountDn, i), format.volume)))
+                            else 
+                                
+                                box.set_text(array.get(lettersBoxClassic, i),
+                                 (str.tostring(array.get(volCountUp, i), format.volume) + " | " + str.tostring(array.get(volCountDn, i), format.volume)))
+                        else 
+
+                            if classic == false
+                                label.set_text(array.get(lettersBox, i),
+                                 math.sign(array.get(volCountUp, i) - array.get(volCountDn, i)) == 1                            ?
+                                 "+" + (str.tostring(array.get(volCountUp, i) - array.get(volCountDn, i), "###,###,###.00"))   : 
+                                       (str.tostring(array.get(volCountUp, i) - array.get(volCountDn, i), "###,###,###.00"))) 
+                            else 
+                                box.set_text(array.get(lettersBoxClassic, i),
+                                 math.sign(array.get(volCountUp, i) - array.get(volCountDn, i)) == 1                            ?
+                                 "+" + (str.tostring(array.get(volCountUp, i) - array.get(volCountDn, i), "###,###,###.00"))   : 
+                                       (str.tostring(array.get(volCountUp, i) - array.get(volCountDn, i), "###,###,###.00"))) 
+                            
+                    else if array.get(volCountUp, i) > 0 and array.get(volCountDn, i) == 0
+                        array.set(volCountDn, i, array.get(volCountUp, i) * .40)
+                        array.set(volCountUp, i, array.get(volCountUp, i) * .60)
+                        if classic == false 
+                            if data == "Volume"
+                                label.set_text(array.get(lettersBox, i), 
+                                 (str.tostring(array.get(volCountUp, i), format.volume) + " | " + str.tostring(array.get(volCountDn, i), format.volume)))
+                            else
+                                label.set_text(array.get(lettersBox, i),
+                                 math.sign(array.get(volCountUp, i) - array.get(volCountDn, i)) == 1                            ?
+                                 "+" + (str.tostring(array.get(volCountUp, i) - array.get(volCountDn, i), "###,###,###.00"))   : 
+                                       (str.tostring(array.get(volCountUp, i) - array.get(volCountDn, i), "###,###,###.00")))
+                        else 
+                            if data == "Volume"
+                                box.set_text(array.get(lettersBoxClassic, i), 
+                                 (str.tostring(array.get(volCountUp, i), format.volume) + " | " + str.tostring(array.get(volCountDn, i), format.volume)))
+                            else
+                                box.set_text(array.get(lettersBoxClassic, i),
+                                 math.sign(array.get(volCountUp, i) - array.get(volCountDn, i)) == 1                            ?
+                                 "+" + (str.tostring(array.get(volCountUp, i) - array.get(volCountDn, i), "###,###,###.00"))   : 
+                                       (str.tostring(array.get(volCountUp, i) - array.get(volCountDn, i), "###,###,###.00"))) 
+
+
+
+    else if array.size(lettersBox) == 1 or array.size(lettersBoxClassic) == 1
+        if assume == true 
+            if data == "Volume" or data == "Vol. Delta"
+                if array.get(volCountUp, 0) == 0 and array.get(volCountDn, 0) != 0
+                    array.set(volCountUp, 0, array.get(volCountDn, 0) * .40)
+                    array.set(volCountDn, 0, array.get(volCountDn, 0) * .60)
+                    if classic == false 
+                        if data == "Volume"
+                            label.set_text(array.get(lettersBox, 0), 
+                             (str.tostring(array.get(volCountUp, 0), format.volume) + " | " + str.tostring(array.get(volCountDn, 0), format.volume)))
+                        else
+
+                            label.set_text(array.get(lettersBox, 0),
+                             math.sign(array.get(volCountUp, 0) - array.get(volCountDn, 0)) == 1                            ?
+                             "+" + (str.tostring(array.get(volCountUp, 0) - array.get(volCountDn, 0), "###,###,###.00"))   : 
+                                   (str.tostring(array.get(volCountUp, 0) - array.get(volCountDn, 0), "###,###,###.00"))) 
+                    else 
+                        if data == "Volume"
+                            box.set_text(array.get(lettersBoxClassic, 0), 
+                             (str.tostring(array.get(volCountUp, 0), format.volume) + " | " + str.tostring(array.get(volCountDn, 0), format.volume)))
+                        else
+
+                            box.set_text(array.get(lettersBoxClassic, 0),
+                             math.sign(array.get(volCountUp, 0) - array.get(volCountDn, 0)) == 1                            ?
+                             "+" + (str.tostring(array.get(volCountUp, 0) - array.get(volCountDn, 0), "###,###,###.00"))   : 
+                                   (str.tostring(array.get(volCountUp, 0) - array.get(volCountDn, 0), "###,###,###.00"))) 
+
+                if array.get(volCountDn, 0) == 0 and array.get(volCountUp, 0) != 0
+                    array.set(volCountDn, 0, array.get(volCountUp, 0) * .40)
+                    array.set(volCountUp, 0, array.get(volCountUp, 0) * .60)
+                    if classic == false 
+                        if data == "Volume"
+                            label.set_text(array.get(lettersBox, 0), 
+                             (str.tostring(array.get(volCountUp, 0), format.volume) + " | " + str.tostring(array.get(volCountDn, 0), format.volume)))
+
+                        else
+
+                            label.set_text(array.get(lettersBox, 0),
+                             math.sign(array.get(volCountUp, 0) - array.get(volCountDn, 0)) == 1                            ?
+                             "+" + (str.tostring(array.get(volCountUp, 0) - array.get(volCountDn, 0), "###,###,###.00"))   : 
+                                   (str.tostring(array.get(volCountUp, 0) - array.get(volCountDn, 0), "###,###,###.00")))
+                    else 
+                        if data == "Volume"
+                            box.set_text(array.get(lettersBoxClassic, 0), 
+                             (str.tostring(array.get(volCountUp, 0), format.volume) + " | " + str.tostring(array.get(volCountDn, 0), format.volume)))
+                        else 
+                            box.set_text(array.get(lettersBoxClassic, 0),
+                             math.sign(array.get(volCountUp, 0) - array.get(volCountDn, 0)) == 1                            ?
+                             "+" + (str.tostring(array.get(volCountUp, 0) - array.get(volCountDn, 0), "###,###,###.00"))   : 
+                                   (str.tostring(array.get(volCountUp, 0) - array.get(volCountDn, 0), "###,###,###.00")))
+
+    if array.size(levelsCount) > 0 
+        var label [] finalBox = array.new_label()
+        SA = switch data    
+            "Volume"     => str.tostring(array.sum(volCountUp), "+###,###,###.00") + " | " + str.tostring(-array.sum(volCountDn), "###,###,###.00")
+            "Vol. Delta" => str.tostring(array.sum(volCountUp) - array.sum(volCountDn), array.sum(volCountUp) - array.sum(volCountDn) >= 0 ? 
+             "+###,###,###.00" : "###,###,###.00")
+        
+        array.push(finalBox, label.new(bar_index, low, yloc = classic == false ? yloc.belowbar : yloc.abovebar, text = classic == false ?  SA + "\nTotal" : 
+         "                    " + SA + "\n                    Total"  , 
+             size = sz, style = outline == true ? label.style_text_outline : label.style_none, textcolor = color.white, text_font_family = fonT))
+        colorChange(array.get(finalBox, array.size(finalBox) - 1), array.sum(volCountUp) - array.sum(volCountDn) >= 0 ? 
+             color.new(c, outline == true ? 50 : 0) : color.new(c1, outline == true ? 50 : 0))
+
+        if array.size(levelsCount) > 0
+            for i = 0 to array.size(levelsCount) - 1
+                for x = 0 to array.size(ticks3) - 1
+                    if array.get(levelsCount, i) == array.get(ticks3, x)
+                        array.set(volCountUpFin, x, array.get(volCountUpFin, x) + array.get(volCountUp, i))
+                        array.set(volCountDnFin, x, array.get(volCountDnFin, x) + array.get(volCountDn, i))
+
+        
+
